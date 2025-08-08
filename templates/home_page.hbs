@@ -1,125 +1,83 @@
-<main id="main-content" class="nv-home">
-  <!-- Hero Section -->
-  <section class="nv-hero" style="background: linear-gradient(135deg, {{settings.hero.gradient_start}}, {{settings.hero.gradient_end}});">
-    <h1>{{settings.hero.title}}</h1>
-    <p class="hero-subtitle">{{settings.hero.subtitle}}</p>
-    <form class="hero-search" role="search" action="/hc/{{help_center.locale}}/search">
-      <input type="search" name="query" placeholder="{{settings.hero.search_placeholder}}" aria-label="{{settings.hero.search_placeholder}}" />
-      <button type="submit">{{t 'search'}}</button>
-    </form>
-  </section>
+<h1 class="visibility-hidden">{{ help_center.name }}</h1>
 
-  <!-- Top-Level Callout Cards -->
-  <section class="top-callouts">
-    {{#each settings.topCalls}}
-      <div class="callout-card" style="background-color: {{this.card_color}};">
-        <div class="card-icon" aria-hidden="true">{{this.icon}}</div>
-        <h3>{{this.title}}</h3>
-        <p>{{this.desc}}</p>
-        <a href="{{this.action_url}}" class="card-action">{{this.action_label}} &rarr;</a>
-      </div>
-    {{/each}}
-  </section>
+<section id="main-content" class="section hero">
+  <div class="hero-inner">
+    <h2 class="visibility-hidden">{{ t 'search' }}</h2>
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" focusable="false" viewBox="0 0 12 12" class="search-icon" aria-hidden="true">
+      <circle cx="4.5" cy="4.5" r="4" fill="none" stroke="currentColor"/>
+      <path stroke="currentColor" stroke-linecap="round" d="M11 11L7.5 7.5"/>
+    </svg>
+    {{search submit=false instant=settings.instant_search class='search search-full'}}
+  </div>
+</section>
 
-  <!-- Knowledge Base Preview -->
-  <section class="kb-preview">
-    <div class="section-header">
-      <h2>Knowledge Base</h2>
-      <a href="{{settings.kb_view_all_url}}" class="view-all">View all articles</a>
-    </div>
-    <div class="kb-grid">
-      {{#each settings.kbSections}}
-        <div class="kb-card" style="background-color: {{this.card_color}};">
-          <h3>{{this.title}}</h3>
-          <ul>
-            {{#each this.articles}}
-              <li><a href="{{this.url}}">{{this.label}}</a></li>
+<div class="container">
+  <section class="section knowledge-base">
+    <h2 class="visibility-hidden">{{ t 'categories' }}</h2>
+    <section class="categories blocks">
+      <ul class="blocks-list">
+        {{#each categories}}
+          {{#if ../has_multiple_categories}}
+            <li class="blocks-item">
+              <a href='{{url}}' class="blocks-item-link">
+                <span class="blocks-item-title">{{name}}</span>
+                <span class="blocks-item-description">{{excerpt description}}</span>
+              </a>
+            </li>
+          {{else}}
+            {{#each sections}}
+              <li class="blocks-item">
+                <a href='{{url}}' class="blocks-item-link">
+                  <span class="blocks-item-title">
+                    {{name}}
+                  </span>
+                  <span class="blocks-item-description">{{excerpt description}}</span>
+                </a>
+              </li>
             {{/each}}
-          </ul>
-          <a href="{{this.section_url}}" class="view-section">View full section</a>
-        </div>
-      {{/each}}
-    </div>
-  </section>
-
-  <!-- Training Materials Carousel -->
-  <section class="training-materials">
-    <div class="section-header">
-      <h2>Training Materials</h2>
-      <a href="{{settings.training_view_all_url}}" class="view-all">View all training</a>
-    </div>
-    <div class="training-carousel" role="region" aria-label="Training Materials">
-      {{#each settings.trainingItems}}
-        <a href="{{this.url}}" class="training-card">
-          <span class="badge">{{this.media_type}} &bull; {{this.media_info}}</span>
-          <h3>{{this.title}}</h3>
-          <p>{{this.description}}</p>
-          <span class="updated">Updated {{this.updated_date}}</span>
-        </a>
-      {{/each}}
-    </div>
-  </section>
-
-  <!-- Main Two-Column Content -->
-  <section class="main-grid">
-    <div class="calendar-panel">
-      <div class="panel-header">
-        <h2>Upcoming Deadlines</h2>
-        <a href="{{settings.calendar_url}}" class="view-all">View full calendar</a>
-      </div>
-      <ul class="calendar-list">
-        {{#each settings.calendarItems}}
-          <li class="calendar-item">
-            <div class="calendar-date">{{this.date}}</div>
-            <div class="calendar-info">
-              <h3>{{this.title}}</h3>
-              <p>{{this.subtitle}}</p>
-            </div>
-            <span class="calendar-badge">{{this.days_left}} days left</span>
-          </li>
+          {{/if}}
         {{/each}}
       </ul>
-    </div>
+      {{pagination}}
+    </section>
 
-    <div class="forum-panel">
-      <div class="panel-header">
-        <h2>Community Forum</h2>
-        <div class="panel-actions">
-          <a href="{{settings.forum_url}}" class="view-all">View all discussions</a>
-          <a href="{{settings.new_post_url}}" class="btn-secondary new-post">New Post</a>
-        </div>
-      </div>
-      <ul class="forum-list">
-        {{#each settings.forumItems}}
-          <li class="forum-item">
-            <h3><a href="{{this.url}}">{{this.title}}</a></h3>
-            <p>{{this.snippet}}</p>
-            <div class="forum-meta">
-              <span class="author">{{this.author}}</span>
-              <span class="replies">{{this.replies}} replies</span>
-              <span class="tag">{{this.tag}}</span>
-              <time datetime="{{this.timestamp}}">{{this.timestamp}}</time>
-            </div>
-          </li>
-        {{/each}}
-      </ul>
-    </div>
+    {{#if promoted_articles}}
+      <section class="articles">
+        <h2>{{t 'promoted_articles'}}</h2>
+        <ul class="article-list promoted-articles">
+          {{#each promoted_articles}}
+            <li class="promoted-articles-item">
+                <a href="{{url}}">
+                  {{title}}
+
+                  {{#if internal}}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" focusable="false" viewBox="0 0 16 16" class="icon-lock" title="{{t 'internal'}}">
+                      <rect width="12" height="9" x="2" y="7" fill="currentColor" rx="1" ry="1"/>
+                      <path fill="none" stroke="currentColor" d="M4.5 7.5V4a3.5 3.5 0 017 0v3.5"/>
+                    </svg>
+                  {{/if}}
+                </a>
+            </li>
+          {{/each}}
+        </ul>
+      </section>
+    {{/if}}
   </section>
 
-  <!-- Deadline Banner -->
-  {{#if settings.deadline_banner.enabled}}
-    <section class="deadline-banner">
-      <div class="deadline-content">
-        <div class="deadline-text">
-          <h2>{{settings.deadline_banner.heading}}</h2>
-          <p>{{settings.deadline_banner.subtext}}</p>
-        </div>
-        <div class="deadline-actions">
-          <a href="{{settings.deadline_banner.primary_url}}" class="btn-primary">{{settings.deadline_banner.primary_label}}</a>
-          <a href="{{settings.deadline_banner.secondary_url}}" class="btn-secondary">{{settings.deadline_banner.secondary_label}}</a>
-        </div>
-      </div>
+  {{#if help_center.community_enabled}}
+    <section class="section home-section community">
+      <h2>{{t 'community'}}</h2>
+      {{#link 'community' class='community-link'}}
+        {{t 'join_conversation'}}
+      {{/link}}
+
+      <div class="community-image"></div>
     </section>
   {{/if}}
-</main>
 
+  <section class="section home-section activity">
+    {{#if settings.show_recent_activity}}
+      {{recent_activity}}
+    {{/if}}
+  </section>
+</div>
