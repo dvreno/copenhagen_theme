@@ -20,20 +20,53 @@
   // Navigation
 
   window.addEventListener("DOMContentLoaded", () => {
+    const alertBanner = document.querySelector(".alert-banner");
+    if (alertBanner) {
+      document.body.style.setProperty("--alert-offset", alertBanner.offsetHeight + "px");
+      const closeBtn = alertBanner.querySelector(".alert-close");
+      if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+          alertBanner.style.display = "none";
+          document.body.style.setProperty("--alert-offset", "0px");
+        });
+      }
+    }
+
+    const trendingContainer = document.querySelector("[data-trending-label]");
+    if (trendingContainer) {
+      const label = trendingContainer.getAttribute("data-trending-label");
+      fetch(`/api/v2/help_center/articles/search.json?label_names=${encodeURIComponent(label)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const list = document.createElement("ul");
+          data.results.forEach((article) => {
+            const li = document.createElement("li");
+            const a = document.createElement("a");
+            a.href = article.html_url;
+            a.textContent = article.title;
+            li.appendChild(a);
+            list.appendChild(li);
+          });
+          trendingContainer.appendChild(list);
+        });
+    }
+
     const menuButton = document.querySelector(".header .menu-button-mobile");
     const menuList = document.querySelector("#user-nav-mobile");
 
-    menuButton.addEventListener("click", (event) => {
-      event.stopPropagation();
-      toggleNavigation(menuButton, menuList);
-    });
-
-    menuList.addEventListener("keyup", (event) => {
-      if (event.keyCode === ESCAPE) {
+    if (menuButton && menuList) {
+      menuButton.addEventListener("click", (event) => {
         event.stopPropagation();
-        closeNavigation(menuButton, menuList);
-      }
-    });
+        toggleNavigation(menuButton, menuList);
+      });
+
+      menuList.addEventListener("keyup", (event) => {
+        if (event.keyCode === ESCAPE) {
+          event.stopPropagation();
+          closeNavigation(menuButton, menuList);
+        }
+      });
+    }
 
     // Toggles expanded aria to collapsible elements
     const collapsible = document.querySelectorAll(
